@@ -35,7 +35,8 @@ local function getTargets()
     local RigLib = require(ReplicatedStorage.CombatFramework.RigLib)
     local hits = RigLib.getBladeHits(character, {character.HumanoidRootPart}, CONFIG.EnemyRange)
 
-    local valid, seen = {}, {}
+    local valid = {}
+    local seen = {}
     for _, v in pairs(hits) do
         local root = v.Parent:FindFirstChild("HumanoidRootPart")
         if root and not seen[v.Parent] then
@@ -51,21 +52,22 @@ coroutine.wrap(function()
         if typeof(func) == "function" and getfenv(func).script == player.PlayerScripts.CombatFramework then
             for _, val in pairs(debug.getupvalues(func)) do
                 if typeof(val) == "table" then
-                    RunService.RenderStepped:Connect(function()
-                        if getgenv().Config.FastAttack then
-                            pcall(function()
-                                local ac = val.activeController
-                                ac.timeToNextAttack = -math.huge
-                                ac.attacking = false
-                                ac.increment = 4
-                                ac.blocking = false
-                                ac.hitboxMagnitude = 150
-                                ac.humanoid.AutoRotate = true
-                                ac.focusStart = 0
-                                ac.currentAttackTrack = 0
-                                sethiddenproperty(player, "SimulationRaxNerous", math.huge)
-                            end)
-                        end
+                    spawn(function()
+                        RunService.RenderStepped:Connect(function()
+                            if getgenv().Config.FastAttack then
+                                pcall(function()
+                                    val.activeController.timeToNextAttack = -(math.huge^math.huge^math.huge)
+                                    val.activeController.attacking = false
+                                    val.activeController.increment = 4
+                                    val.activeController.blocking = false
+                                    val.activeController.hitboxMagnitude = 150
+                                    val.activeController.humanoid.AutoRotate = true
+                                    val.activeController.focusStart = 0
+                                    val.activeController.currentAttackTrack = 0
+                                    sethiddenproperty(player, "SimulationRaxNerous", math.huge)
+                                end)
+                            end
+                        end)
                     end)
                 end
             end
@@ -73,14 +75,15 @@ coroutine.wrap(function()
     end
 end)()
 
-RunService.RenderStepped:Connect(function()
-    if getgenv().Config.ClickAttack then
-        pcall(function()
-            local vu = game:GetService("VirtualUser")
-            vu:CaptureController()
-            vu:Button1Down(Vector2.new(0,1,0,1))
-        end)
-    end
+spawn(function()
+    RunService.RenderStepped:Connect(function()
+        if getgenv().Config.ClickAttack then
+            pcall(function()
+                game:GetService("VirtualUser"):CaptureController()
+                game:GetService("VirtualUser"):Button1Down(Vector2.new(0,1,0,1))
+            end)
+        end
+    end)
 end)
 
 spawn(function()
